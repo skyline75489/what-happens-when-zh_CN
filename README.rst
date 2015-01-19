@@ -29,7 +29,7 @@ HID把键盘按下的事件传送给 ``KBDHID.sys`` 驱动，把HID的信号转�
 
 ``Win32K.sys`` 通过 ``GetForegroundWindow()`` API函数找到当前哪个窗口是活跃的。这个API函数提供了当前浏览器的地址栏的句柄。Windows系统的"message pump"机制调用 ``SendMessage(hWnd, WM_KEYDOWN, VK_RETURN, lParam)`` 函数， ``lParam`` 是一个用来指示这个按键的更多信息的掩码，这些信息包括按键重复次数（这里是0）,实际扫描码（可能依赖于OEM厂商，不过通常不会是 ``VK_RETURN`` ），功能键（alt, shift, ctrl）是否被按下（在这里没有），以及一些其他状态。
 
-Windows的 ``SendMessage`` API直接将消息添加到特定窗口句柄 ``hWnd`` 的消息队列中，之后赋给 ``hWnd`` 的主要消息处理函数``WindowProc``将会被调用，用于处理队列中的消息。
+Windows的 ``SendMessage`` API直接将消息添加到特定窗口句柄 ``hWnd`` 的消息队列中，之后赋给 ``hWnd`` 的主要消息处理函数 ``WindowProc`` 将会被调用，用于处理队列中的消息。
 
 当前活跃的句柄``hWnd``实际上是一个edit control控件，这种情况下，``WindowProc`` 有一个用于处理 ``WM_KEYDOWN`` 消息的处理器，这段代码会查看 ``SendMessage`` 传入的第三个参数 ``wParam`` ，因为这个参数是 ``VK_RETURN`` ，于是它知道用户按下了回车键。
 
@@ -37,7 +37,7 @@ Windows的 ``SendMessage`` API直接将消息添加到特定窗口句柄 ``hWnd`
 (Mac OS X)一个 ``KeyDown`` NSEvent被发往应用程序
 ------------------------------------------------
 
-中断信号引发了I/O Kit Kext键盘驱动的中断处理事件，驱动把信号翻译成键码值，然后传给OS X的 ``WindowServer`` 进程。然后， ``WindowServer`` 将这个事件通过Mach端口分发给合适的（活跃的，或者正在监听的）应用程序，这个信号会被放到应用程序的消息队列里。队列中的消息可以被拥有足够高权限的线程使用``mach_ipc_dispatch``函数读取到。这个过程通常是由 ``NSApplication`` 主事件循环产生并且处理的，通过 ``NSEventType`` 为 ``KeyDown`` 的 ``NSEvent`` 。
+中断信号引发了I/O Kit Kext键盘驱动的中断处理事件，驱动把信号翻译成键码值，然后传给OS X的 ``WindowServer`` 进程。然后， ``WindowServer`` 将这个事件通过Mach端口分发给合适的（活跃的，或者正在监听的）应用程序，这个信号会被放到应用程序的消息队列里。队列中的消息可以被拥有足够高权限的线程使用 ``mach_ipc_dispatch`` 函数读取到。这个过程通常是由 ``NSApplication`` 主事件循环产生并且处理的，通过 ``NSEventType`` 为 ``KeyDown`` 的 ``NSEvent`` 。
 
 (GNU/Linux)Xorg 服务器监听键码值
 --------------------------------
@@ -56,7 +56,7 @@ Windows的 ``SendMessage`` API直接将消息添加到特定窗口句柄 ``hWnd`
 转换非ASCII的Unicode字符
 ------------------------
 
-* 浏览器检查输入是否含有不是 ``a-z``， ``A-Z``，``0-9``， ``-``或者``.``的字符
+* 浏览器检查输入是否含有不是 ``a-z``， ``A-Z``，``0-9``， ``-`` 或者 ``.`` 的字符
 * 这里主机名是``google.com``，所以没有非ASCII的字符，如果有的话，浏览器会对主机名部分使用 `Punnycode`_ 编码
 
 DNS查询
@@ -64,8 +64,8 @@ DNS查询
 
 * 浏览器检查域名是否在缓存当中
 * 如果缓存中没有，就去调用 ``gethostbynme`` 库函数（操作系统不同函数也不同）进行查询
-* ``gethostbyname``函数在试图进行DNS解析之前首先检查域名是否在 ``/etc/hosts`` 里
-* 如果 ``gethostbyname`` 没有这个域名的缓存记录，也没有在 ``hosts`` 里找到，它将会向DNS 服务器发送一条DNS查询请求。DNS服务器是有网络通信栈提供的，通常是本地路由器或者ISP的缓存DNS服务器。
+* ``gethostbyname`` 函数在试图进行DNS解析之前首先检查域名是否在 ``/etc/hosts`` 里
+* 如果 ``gethostbyname`` 没有这个域名的缓存记录，也没有在 ``hosts`` 里找到，它将会向DNS 服务器发送一条DNS查询请求。DNS服务器是由网络通信栈提供的，通常是本地路由器或者ISP的缓存DNS服务器。
 
 * 查询本地DNS服务器
 * 如果DNS服务器和我们的主机在同一个子网内，系统将会查询ARP缓存，以得到DNS服务器的ARP入口。缓存没有命中的话就要进行ARP广播（见下面），缓存命中的话，我们就得到了DNS.server.ip.address = dns:mac:address
