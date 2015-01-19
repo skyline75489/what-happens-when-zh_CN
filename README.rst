@@ -5,9 +5,9 @@
 
 不过我们不再局限于平常的回答，而是想办法回答地尽可能具体，不遗漏任何细节。
 
-这将是一个协作的过程，所以深入挖掘吧，并且帮助我们一起完善它。仍然有大量的细节等待着你来添加，欢迎向我们发送Pull Requset!
+这将是一个协作的过程，所以深入挖掘吧，并且帮助我们一起完善它。仍然有大量的细节等待着你来添加，欢迎向我们发送Pull Requset！
 
-这些内容使用 `Creative Commons Zero`_ 协议发布
+这些内容使用 `Creative Commons Zero`_ 协议发布。
 
 回车键按下
 ----------
@@ -35,8 +35,34 @@ Windows的 ``SendMessage`` API直接将消息添加到特定窗口句柄(``hWnd`
 
 
 (在Mac OS X上)一个 ``KeyDown`` NSEvent被发往应用程序
+----------------------------------------------------
 
 中断信号引发了I/O Kit Kext键盘驱动的中断处理事件，驱动把信号翻译成键码值，然后传给OS X的 ``WindowServer`` 进程。然后， ``WindowServer`` 将这个事件通过Mach端口分发给合适的（活跃的，或者正在监听的）应用程序，这个信号会被放到应用程序的消息队列里。队列中的消息可以被拥有足够高权限的线程使用``mach_ipc_dispatch``函数读取到。这个过程通常是由 ``NSApplication`` 主事件循环产生并且处理的，通过 ``NSEventType``为``KeyDown``的``NSEvent``。
 
+输入的是URL还是搜索的关键字？
+-----------------------------
+
+解析URL
+--------
+
+检查HSTS列表
+------------
+
+转换非ASCII的Unicode字符
+------------------------
+
+* 浏览器检查输入是否含有不是 ``a-z``， ``A-Z``，``0-9``， ``-``或者``.``的字符
+* 这里主机名是``google.com``，所以没有非ASCII的字符，如果有的话，浏览器会对主机名部分使用 `Punnycode`_ 编码
+
+DNS查询
+-------
+
 
 .. _`Creative Commons Zero`: https://creativecommons.org/publicdomain/zero/1.0/
+.. _`"CSS lexical and syntax grammar"`: http://www.w3.org/TR/CSS2/grammar.html
+.. _`Punycode`: https://en.wikipedia.org/wiki/Punycode
+.. _`Ethernet`: http://en.wikipedia.org/wiki/IEEE_802.3
+.. _`WiFi`: https://en.wikipedia.org/wiki/IEEE_802.11
+.. _`Cellular data network`: https://en.wikipedia.org/wiki/Cellular_data_communication_protocol
+.. _`analog-to-digital converter`: https://en.wikipedia.org/wiki/Analog-to-digital_converter
+.. _`network node`: https://en.wikipedia.org/wiki/Computer_network#Network_nodes
