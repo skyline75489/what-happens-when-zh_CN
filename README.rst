@@ -133,17 +133,89 @@ ARP
 
 
 
+HTTP服务器请求处理
+--------------------------
+HTTPD(HTTP Daemon)在服务器端处理请求/相应。
+最常见的HTTPD有Linux上常用的Apache与windows的IIS。
+* HTTPD接收请求
+* 服务器把请求拆分为以下几个参数：
+    * HTTP请求方法(GET, POST, HEAD, PUT 和 DELETE )。在访问Google这种情况下，使用的是GET方法。
+    * 域名：google.com
+    * 请求路径/页面：/  (我们没有请求google.com下的指定的页面，因此 / 是默认的路径)
+* 服务器验证其上已经配置了google.com的虚拟主机
+* 服务器验证google.com接受GET方法
+* 服务器验证该用户可以使用GET方法(根据IP地址，身份信息等)
+* 服务器根据请求信息获取相应的响应内容，这种情况下由于访问路径是 "/" ,会访问index这个文件。(你可以重写这个规则，但是这个是最常用的)
+* 服务器
 
+
+* The server will parse the file according to the handler, for example -
+  let's say that Google is running on PHP.
+* The server will use PHP to interpret the index file, and catch the output.
+* The server will return the output, on the same request to the client.
+
+HTML parsing...
+---------------
+
+* Fetch contents of requested document from network layer in 8kb chunks.
+* Parse HTML document (See
+  https://html.spec.whatwg.org/multipage/syntax.html#parsing for more
+  information).
+* Convert elements to DOM nodes in the content tree.
+* Fetch/prefetch external resources linked to the page (CSS, Images, JavaScript
+  files, etc.)
+* Execute synchronous JavaScript code.
+
+CSS interpretation...
+---------------------
+
+* Parse CSS files and ``<style>`` tag contents using `"CSS lexical and syntax
+  grammar"`_
+
+Page Rendering
+--------------
+
+* Create a 'Frame Tree' or 'Render Tree' by traversing the DOM nodes, and
+  calculating the CSS style values for each node.
+* Calculate the preferred width of each node in the 'Frame Tree' bottom up
+  by summing the preferred width of the child nodes and the node's
+  horizontal margins, borders, and padding.
+* Calculate the actual width of each node top-down by allocating each node's
+  available width to its children.
+* Calculate the height of each node bottom-up by applying text wrapping and
+  summing the child node heights and the node's margins, borders, and padding.
+* Calculate the coordinates of each node using the information calculated
+  above.
+* More complicated steps are taken when elements are ``floated``,
+  positioned ``absolutely`` or ``relatively``, or other complex features
+  are used. See
+  http://dev.w3.org/csswg/css2/ and http://www.w3.org/Style/CSS/current-work
+  for more details.
+* Create layers to describe which parts of the page can be animated as a group
+  without being re-rasterized. Each frame/render object is assigned to a layer.
+* Textures are allocated for each layer of the page.
+* The frame/render objects for each layers are traversed and drawing commands
+  are executed for their respective layer. This may be rasterized by the CPU
+  or drawn on the GPU directly using D2D/SkiaGL.
+* All of the above steps may reuse calculated values from the last time the
+  webpage was rendered, so that incremental changes require less work.
+* The page layers are sent to the compositing process where they are combined
+  with layers for other visible content like the browser chrome, iframes
+  and addon panels.
+* Final layer positions are computed and the composite commands are issued
+  via Direct3D/OpenGL. The GPU command buffer(s) are flushed to the GPU for
+  asynchronous rendering and the frame is sent to the window server.
 
 
 
 GPU 渲染
-===
+--------
 
 Window Server
-===
+---------
+
 后期渲染与用户引发的处理
-===
+----------
 渲染结束后，浏览器根据某些时间机制运行JavaScript代码(比如Google Doodle动画)或与用户交互(在搜索栏输入关键字获得搜索建议)。类似Flash和Java的插件也会运行,尽管Google主页里没有。这些脚本可以触发网络请求，也可能改变网页的内容和布局，产生又一轮渲染与绘制。
 
 
