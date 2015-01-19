@@ -130,6 +130,30 @@ ARP
 * 使用53端口向DNS服务器发送UDP请求包，如果响应包太大，会使用TCP
 * 如果本地/ISP DNS服务器没有找到结果，它会发送一个递归查询请求，一层一层向高层DNS服务器做查询，直到查询到起始授权机构，如果找到会把结果返回
 
+
+
+
+
+
+
+
+GPU 渲染
+===
+
+Window Server
+===
+后期渲染与用户引发的处理
+===
+渲染结束后，浏览器根据某些时间机制运行JavaScript代码(比如Google Doodle动画)或与用户交互(在搜索栏输入关键字获得搜索建议)。类似Flash和Java的插件也会运行,尽管Google主页里没有。这些脚本可以触发网络请求，也可能改变网页的内容和布局，产生又一轮渲染与绘制。
+
+
+
+
+
+
+
+
+
 .. _`Creative Commons Zero`: https://creativecommons.org/publicdomain/zero/1.0/
 .. _`"CSS lexical and syntax grammar"`: http://www.w3.org/TR/CSS2/grammar.html
 .. _`Punycode`: https://en.wikipedia.org/wiki/Punycode
