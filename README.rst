@@ -96,7 +96,7 @@ ARP
 
 直连：
 
-* 如果我们和路由器是直接连接的，路由器会返回一个 ``ARP Reply``（见下面）。
+* 如果我们和路由器是直接连接的，路由器会返回一个 ``ARP Reply`` （见下面）。
 
 集线器：
 
@@ -120,7 +120,7 @@ ARP
 现在我们有了DNS服务器或者默认网关的IP地址，我们可以继续DNS请求了：
 
 * 使用53端口向DNS服务器发送UDP请求包，如果响应包太大，会使用TCP
-* 如果本地/ISP DNS服务器没有找到结果，它会发送一个递归查询请求，一层一层向高层DNS服务器做查询，直到查询到起始授权机构，如果找到结果会把结果返回
+* 如果本地/ISP DNS服务器没有找到结果，它会发送一个递归查询请求，一层一层向高层DNS服务器做查询，直到查询到起始授权机构，如果找到会把结果返回
 
 .. _`Creative Commons Zero`: https://creativecommons.org/publicdomain/zero/1.0/
 .. _`"CSS lexical and syntax grammar"`: http://www.w3.org/TR/CSS2/grammar.html
