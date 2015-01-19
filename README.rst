@@ -31,7 +31,7 @@ HID把键盘按下的事件传送给 ``KBDHID.sys`` 驱动，把HID的信号转�
 
 Windows的 ``SendMessage`` API直接将消息添加到特定窗口句柄 ``hWnd`` 的消息队列中，之后赋给 ``hWnd`` 的主要消息处理函数 ``WindowProc`` 将会被调用，用于处理队列中的消息。
 
-当前活跃的句柄``hWnd``实际上是一个edit control控件，这种情况下，``WindowProc`` 有一个用于处理 ``WM_KEYDOWN`` 消息的处理器，这段代码会查看 ``SendMessage`` 传入的第三个参数 ``wParam`` ，因为这个参数是 ``VK_RETURN`` ，于是它知道用户按下了回车键。
+当前活跃的句柄 ``hWnd`` 实际上是一个edit control控件，这种情况下，``WindowProc`` 有一个用于处理 ``WM_KEYDOWN`` 消息的处理器，这段代码会查看 ``SendMessage`` 传入的第三个参数 ``wParam`` ，因为这个参数是 ``VK_RETURN`` ，于是它知道用户按下了回车键。
 
 
 (Mac OS X)一个 ``KeyDown`` NSEvent被发往应用程序
@@ -57,7 +57,7 @@ Windows的 ``SendMessage`` API直接将消息添加到特定窗口句柄 ``hWnd`
 ------------------------
 
 * 浏览器检查输入是否含有不是 ``a-z``， ``A-Z``，``0-9``， ``-`` 或者 ``.`` 的字符
-* 这里主机名是``google.com``，所以没有非ASCII的字符，如果有的话，浏览器会对主机名部分使用 `Punnycode`_ 编码
+* 这里主机名是 ``google.com`` ，所以没有非ASCII的字符，如果有的话，浏览器会对主机名部分使用 `Punnycode`_ 编码
 
 DNS查询
 -------
@@ -74,6 +74,53 @@ DNS查询
 ARP
 ---
 
+要想发送ARP广播，我们需要有一个目标IP地址，同时还需要知道用于发送ARP广播的接口的Mac地址。
+
+* 首先查询ARP缓存，如果缓存命中，我们返回结果：目标IP = MAC
+
+如果缓存没有命中：
+
+
+* 查看路由表，看看目标IP地址是不是在本地路由表中的某个子网内。是的话，使用跟那个子网相连的接口，否则使用与默认网关相连的接口。
+* 查询选择的网络接口的MAC地址
+* 我们发送一个二层ARP请求：
+
+``ARP Request``::
+
+    Sender MAC: interface:mac:address:here
+    Sender IP: interface.ip.goes.here
+    Target MAC: 255.255.255.255 (Broadcast)
+    Target IP: target.ip.goes.here
+
+根据连接我们和路由器的硬件类型：
+
+直连：
+
+* 如果我们和路由器是直接连接的，路由器会返回一个 ``ARP Reply``（见下面）。
+
+集线器：
+
+* 如果我们连接到一个集线器，集线器会把ARP请求向所有其它端口广播，如果路由器也“连接”在其中，它会返回一个 ``ARP Reply`` 。
+
+交换机：
+
+* 如果我们连接到了一个交换机，交换机会检查本地 CAM/MAC 表，看看哪个端口有我们要找的那个MAC地址，如果没有找到，交换机会向所有其它端口广播这个ARP请求。
+* 如果交换机的MAC/CAM表中有对应的条目，交换机会向有我们想要查询的MAC地址的那个端口发送ARP请求
+* 如果路由器也“连接”在其中，它会返回一个 ``ARP Reply``
+
+
+``ARP Reply``::
+
+    Sender MAC: target:mac:address:here
+    Sender IP: target.ip.goes.here
+    Target MAC: interface:mac:address:here
+    Target IP: interface.ip.goes.here
+
+
+现在我们有了DNS服务器或者默认网关的IP地址，我们可以继续DNS请求了：
+
+* 使用53端口向DNS服务器发送UDP请求包，如果响应包太大，会使用TCP
+* 如果本地/ISP DNS服务器没有找到结果，它会发送一个递归查询请求，一层一层向高层DNS服务器做查询，直到查询到起始授权机构，如果找到结果会把结果返回
 
 .. _`Creative Commons Zero`: https://creativecommons.org/publicdomain/zero/1.0/
 .. _`"CSS lexical and syntax grammar"`: http://www.w3.org/TR/CSS2/grammar.html
