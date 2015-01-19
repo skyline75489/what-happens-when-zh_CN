@@ -37,7 +37,7 @@ Windows的 ``SendMessage`` API直接将消息添加到特定窗口句柄(``hWnd`
 (在Mac OS X上)一个 ``KeyDown`` NSEvent被发往应用程序
 ----------------------------------------------------
 
-中断信号引发了I/O Kit Kext键盘驱动的中断处理事件，驱动把信号翻译成键码值，然后传给OS X的 ``WindowServer`` 进程。然后， ``WindowServer`` 将这个事件通过Mach端口分发给合适的（活跃的，或者正在监听的）应用程序，这个信号会被放到应用程序的消息队列里。队列中的消息可以被拥有足够高权限的线程使用``mach_ipc_dispatch``函数读取到。这个过程通常是由 ``NSApplication`` 主事件循环产生并且处理的，通过 ``NSEventType``为``KeyDown``的``NSEvent``。
+中断信号引发了I/O Kit Kext键盘驱动的中断处理事件，驱动把信号翻译成键码值，然后传给OS X的 ``WindowServer`` 进程。然后， ``WindowServer`` 将这个事件通过Mach端口分发给合适的（活跃的，或者正在监听的）应用程序，这个信号会被放到应用程序的消息队列里。队列中的消息可以被拥有足够高权限的线程使用``mach_ipc_dispatch``函数读取到。这个过程通常是由 ``NSApplication`` 主事件循环产生并且处理的，通过 ``NSEventType`` 为 ``KeyDown`` 的 ``NSEvent`` 。
 
 输入的是URL还是搜索的关键字？
 -----------------------------
@@ -56,6 +56,13 @@ Windows的 ``SendMessage`` API直接将消息添加到特定窗口句柄(``hWnd`
 
 DNS查询
 -------
+
+* 浏览器检查域名是否在缓存当中
+* 如果缓存中没有，就去调用 ``gethostbynme`` 库函数（操作系统不同函数也不同）进行查询
+* ``gethostbyname``函数在试图进行DNS解析之前首先检查域名是否在 ``/etc/hosts`` 里
+* 如果 ``gethostbyname`` 没有这个域名的缓存记录，也没有在 ``hosts`` 里找到，它将会向DNS 服务器发送一条DNS查询请求。DNS服务器是有网络通信栈提供的，通常是本地路由器或者ISP的缓存DNS服务器。
+
+* 本地DNS服务器接收到查询请求
 
 
 .. _`Creative Commons Zero`: https://creativecommons.org/publicdomain/zero/1.0/
