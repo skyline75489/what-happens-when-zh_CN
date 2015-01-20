@@ -130,6 +130,84 @@ ARP
 * 使用53端口向DNS服务器发送UDP请求包，如果响应包太大，会使用TCP
 * 如果本地/ISP DNS服务器没有找到结果，它会发送一个递归查询请求，一层一层向高层DNS服务器做查询，直到查询到起始授权机构，如果找到会把结果返回
 
+
+
+
+HTTP服务器请求处理
+--------------------------
+HTTPD(HTTP Daemon)在服务器端处理请求/相应。
+最常见的HTTPD有Linux上常用的Apache与windows的IIS。
+* HTTPD接收请求
+* 服务器把请求拆分为以下几个参数：
+    * HTTP请求方法(GET, POST, HEAD, PUT 和 DELETE )。在访问Google这种情况下，使用的是GET方法。
+    * 域名：google.com
+    * 请求路径/页面：/  (我们没有请求google.com下的指定的页面，因此 / 是默认的路径)
+* 服务器验证其上已经配置了google.com的虚拟主机
+* 服务器验证google.com接受GET方法
+* 服务器验证该用户可以使用GET方法(根据IP地址，身份信息等)
+* 服务器根据请求信息获取相应的响应内容，这种情况下由于访问路径是 "/" ,会访问index这个文件。(你可以重写这个规则，但是这个是最常用的)
+* 服务器会使用指定的处理程序分析处理这个文件,比如假设Google使用PHP
+* 服务器会使用PHP解析index文件,并捕获输出
+* 服务器会返回PHP的输出结果给请求者
+
+
+HTML 解析...
+---------------
+
+* 从网络层按8kb每块取回请求的内容
+* 解析HTML文档(详见https://html.spec.whatwg.org/multipage/syntax.html#parsing)
+* 在内容树中把各元素转换为DOM节点
+* 加载/预加载此页中链接的外部资源(CSS, Images, JavaScript
+ files等)
+* 执行同步的JavaScript代码
+
+CSS(级联样式表) 解析...
+---------------------
+
+* 使用 `CSS词法 句法`_ 分析CSS文件和 ``<style>`` 标签
+
+
+页面渲染
+--------------
+
+* 通过遍历DOM节点树创建一个 #TODO 'Frame Tree'或'Render Tree',并计算每个节点的各个CSS样式值
+* 通过累加子节点的宽度,该节点的水平内边距(padding)、边框(border)和外边距(margin),自底向上的计算'Frame Tree'每个节点#TODO"首选(preferred)"宽度
+* 通过自顶向下的给每个节点的子节点分配可行宽度,计算每个节点的实际宽度
+* 通过应用#TODO 文字环绕(text wrapping)、累加子节点的高度和此节点的内边距(padding)、边框(border)和外边距(margin),自底向上的计算每个节点的高度
+* 使用上面的计算结果构建每个节点的坐标
+* 当存在元素使用 ``floated``,
+ 位置有 ``absolutely`` 或 ``relatively``属性的时候,会有更多复杂的计算,详见http://dev.w3.org/csswg/css2/ 和 http://www.w3.org/Style/CSS/current-work
+* #TODO 创建layer(层)来表示页面中的某部分可以成组的被绘制,而不用被being re-rasterized.每个帧对象都被分配给一个层(Create layers to describe which parts of the page can be animated as a group
+  without being re-rasterized. Each frame/render object is assigned to a layer.)
+* #TODO页面上的每个层都被分配了Textures(Textures are allocated for each layer of the page.)
+* #TODO每个层的帧对象都会被遍历,计算机执行绘图命令绘制各个层,此过程可能由CPU执行或直接通过D2D/SkiaGL在GPU上完成(The frame/render objects for each layers are traversed and drawing commands
+  are executed for their respective layer. This may be rasterized by the CPU
+  or drawn on the GPU directly using D2D/SkiaGL.)
+* 上面所有步骤都可能利用到最近一次页面渲染时计算出来的各个值,这样可以减少不少计算量
+* 计算出各个层的最终位置,一组命令由 Direct3D/OpenGL发出,GPU命令缓冲区清空,命令传至GPU并异步渲染.帧被送到window server
+
+
+
+
+
+GPU 渲染
+--------
+
+Window Server
+---------
+
+后期渲染与用户引发的处理
+----------
+渲染结束后，浏览器根据某些时间机制运行JavaScript代码(比如Google Doodle动画)或与用户交互(在搜索栏输入关键字获得搜索建议)。类似Flash和Java的插件也会运行,尽管Google主页里没有。这些脚本可以触发网络请求，也可能改变网页的内容和布局，产生又一轮渲染与绘制。
+
+
+
+
+
+
+
+
+
 .. _`Creative Commons Zero`: https://creativecommons.org/publicdomain/zero/1.0/
 .. _`"CSS lexical and syntax grammar"`: http://www.w3.org/TR/CSS2/grammar.html
 .. _`Punycode`: https://en.wikipedia.org/wiki/Punycode
