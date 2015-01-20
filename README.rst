@@ -146,65 +146,47 @@ HTTPD(HTTP Daemon)在服务器端处理请求/相应。
 * 服务器验证google.com接受GET方法
 * 服务器验证该用户可以使用GET方法(根据IP地址，身份信息等)
 * 服务器根据请求信息获取相应的响应内容，这种情况下由于访问路径是 "/" ,会访问index这个文件。(你可以重写这个规则，但是这个是最常用的)
-* 服务器
+* 服务器会使用指定的处理程序分析处理这个文件,比如假设Google使用PHP
+* 服务器会使用PHP解析index文件,并捕获输出
+* 服务器会返回PHP的输出结果给请求者
 
 
-* The server will parse the file according to the handler, for example -
-  let's say that Google is running on PHP.
-* The server will use PHP to interpret the index file, and catch the output.
-* The server will return the output, on the same request to the client.
-
-HTML parsing...
+HTML 解析...
 ---------------
 
-* Fetch contents of requested document from network layer in 8kb chunks.
-* Parse HTML document (See
-  https://html.spec.whatwg.org/multipage/syntax.html#parsing for more
-  information).
-* Convert elements to DOM nodes in the content tree.
-* Fetch/prefetch external resources linked to the page (CSS, Images, JavaScript
-  files, etc.)
-* Execute synchronous JavaScript code.
+* 从网络层按8kb每块取回请求的内容
+* 解析HTML文档(详见https://html.spec.whatwg.org/multipage/syntax.html#parsing)
+* 在内容树中把各元素转换为DOM节点
+* 加载/预加载此页中链接的外部资源(CSS, Images, JavaScript
+ files等)
+* 执行同步的JavaScript代码
 
-CSS interpretation...
+CSS(级联样式表) 解析...
 ---------------------
 
-* Parse CSS files and ``<style>`` tag contents using `"CSS lexical and syntax
-  grammar"`_
+* 使用 `CSS词法 句法`_ 分析CSS文件和 ``<style>`` 标签
 
-Page Rendering
+
+页面渲染
 --------------
 
-* Create a 'Frame Tree' or 'Render Tree' by traversing the DOM nodes, and
-  calculating the CSS style values for each node.
-* Calculate the preferred width of each node in the 'Frame Tree' bottom up
-  by summing the preferred width of the child nodes and the node's
-  horizontal margins, borders, and padding.
-* Calculate the actual width of each node top-down by allocating each node's
-  available width to its children.
-* Calculate the height of each node bottom-up by applying text wrapping and
-  summing the child node heights and the node's margins, borders, and padding.
-* Calculate the coordinates of each node using the information calculated
-  above.
-* More complicated steps are taken when elements are ``floated``,
-  positioned ``absolutely`` or ``relatively``, or other complex features
-  are used. See
-  http://dev.w3.org/csswg/css2/ and http://www.w3.org/Style/CSS/current-work
-  for more details.
-* Create layers to describe which parts of the page can be animated as a group
-  without being re-rasterized. Each frame/render object is assigned to a layer.
-* Textures are allocated for each layer of the page.
-* The frame/render objects for each layers are traversed and drawing commands
+* 通过遍历DOM节点树创建一个 #TODO 'Frame Tree'或'Render Tree',并计算每个节点的各个CSS样式值
+* 通过累加子节点的宽度,该节点的水平内边距(padding)、边框(border)和外边距(margin),自底向上的计算'Frame Tree'每个节点#TODO"首选(preferred)"宽度
+* 通过自顶向下的给每个节点的子节点分配可行宽度,计算每个节点的实际宽度
+* 通过应用#TODO 文字环绕(text wrapping)、累加子节点的高度和此节点的内边距(padding)、边框(border)和外边距(margin),自底向上的计算每个节点的高度
+* 使用上面的计算结果构建每个节点的坐标
+* 当存在元素使用 ``floated``,
+ 位置有 ``absolutely`` 或 ``relatively``属性的时候,会有更多复杂的计算,详见http://dev.w3.org/csswg/css2/ 和 http://www.w3.org/Style/CSS/current-work
+* #TODO 创建layer(层)来表示页面中的某部分可以成组的被绘制,而不用被being re-rasterized.每个帧对象都被分配给一个层(Create layers to describe which parts of the page can be animated as a group
+  without being re-rasterized. Each frame/render object is assigned to a layer.)
+* #TODO页面上的每个层都被分配了Textures(Textures are allocated for each layer of the page.)
+* #TODO每个层的帧对象都会被遍历,计算机执行绘图命令绘制各个层,此过程可能由CPU执行或直接通过D2D/SkiaGL在GPU上完成(The frame/render objects for each layers are traversed and drawing commands
   are executed for their respective layer. This may be rasterized by the CPU
-  or drawn on the GPU directly using D2D/SkiaGL.
-* All of the above steps may reuse calculated values from the last time the
-  webpage was rendered, so that incremental changes require less work.
-* The page layers are sent to the compositing process where they are combined
-  with layers for other visible content like the browser chrome, iframes
-  and addon panels.
-* Final layer positions are computed and the composite commands are issued
-  via Direct3D/OpenGL. The GPU command buffer(s) are flushed to the GPU for
-  asynchronous rendering and the frame is sent to the window server.
+  or drawn on the GPU directly using D2D/SkiaGL.)
+* 上面所有步骤都可能利用到最近一次页面渲染时计算出来的各个值,这样可以减少不少计算量
+* 计算出各个层的最终位置,一组命令由 Direct3D/OpenGL发出,GPU命令缓冲区清空,命令传至GPU并异步渲染.帧被送到window server
+
+
 
 
 
