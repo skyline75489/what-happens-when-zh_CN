@@ -79,7 +79,7 @@ Windows的 ``SendMessage`` API直接将消息添加到特定窗口句柄 ``hWnd`
 ------------------------
 
 * 浏览器检查输入是否含有不是 ``a-z``， ``A-Z``，``0-9``， ``-`` 或者 ``.`` 的字符
-* 这里主机名是 ``google.com`` ，所以没有非ASCII的字符，如果有的话，浏览器会对主机名部分使用 `Punnycode`_ 编码
+* 这里主机名是 ``google.com`` ，所以没有非ASCII的字符，如果有的话，浏览器会对主机名部分使用 `Punycode`_  编码
 
 DNS查询
 -------
@@ -155,6 +155,17 @@ TCP流套接字，对应的参数是 ``AF_INET`` 和 ``SOCK_STREAM`` 。
 * TCP segment被送往网络层，网络层会在其中再加入一个IP头部，里面包含了目标服务器的IP地址以及本机的IP地址，把它封装成一个TCP packet。
 * 这个TCP packet接下来会进入链路层，链路层会在封包中加入frame头部，里面包含了本地内置网卡的MAC地址以及网关（本地路由器）的MAC地址。像前面说的一样，如果内核不知道网关的MAC地址，它必须进行ARP广播来查询其地址。
 
+到了现在，TCP封包已经准备好了，可是使用下面的方式进行传输：
+
+* `以太网`_
+* `WiFi`_
+* `蜂窝数据网络`_
+
+对于大部分家庭网络和小型企业网络来说，封包会从本地计算机出发，经过本地网络，再通过调制解调器把数字信号转换成模拟信号，使其适于在电话线路，有线电视光缆和无线电话线路上传输。在传输线路的另一端，是另外一个调制解调器，它把模拟信号转换回数字信号，交由下一个 `网络节点`_ 处理。节点的目标地址和源地址将在后面讨论。
+
+大型企业和比较新的住宅通常使用光纤或直接以太网连接，这种情况下信号一直是数字的，会被直接传到下一个 `网络节点`_ 进行处理。
+
+最终封包会到达管理本地子网的路由器。在那里出发，它会继续经过自治区域的边界路由器，其他自治区域，最终到达目标服务器。一路上经过的这些路由器会从IP数据报头部里提取出目标地址，并将封包正确地路由到下一个目的地。IP数据报头部TTL域的值每经过一个路由器就减1，如果封包的TTL变为0，或者路由器由于网络拥堵等原因封包队列满了，那么这个包会被路由器丢弃。
 
 HTTP服务器请求处理
 --------------------------
@@ -180,14 +191,13 @@ HTML 解析...
 * 从网络层按8kb每块取回请求的内容
 * 解析HTML文档(详见https://html.spec.whatwg.org/multipage/syntax.html#parsing)
 * 在内容树中把各元素转换为DOM节点
-* 加载/预加载此页中链接的外部资源(CSS, Images, JavaScript
- files等)
+* 加载/预加载此页中链接的外部资源(CSS, Images, JavaScript files等)
 * 执行同步的JavaScript代码
 
 CSS(级联样式表) 解析...
 ---------------------
 
-* 使用 `CSS词法 句法`_ 分析CSS文件和 ``<style>`` 标签
+* 根据 `CSS词法和句法`_ 分析CSS文件和 ``<style>`` 标签
 
 
 页面渲染
@@ -199,7 +209,7 @@ CSS(级联样式表) 解析...
 * 通过应用#TODO 文字环绕(text wrapping)、累加子节点的高度和此节点的内边距(padding)、边框(border)和外边距(margin),自底向上的计算每个节点的高度
 * 使用上面的计算结果构建每个节点的坐标
 * 当存在元素使用 ``floated``,
- 位置有 ``absolutely`` 或 ``relatively``属性的时候,会有更多复杂的计算,详见http://dev.w3.org/csswg/css2/ 和 http://www.w3.org/Style/CSS/current-work
+ 位置有 ``absolutely`` 或 ``relatively`` 属性的时候,会有更多复杂的计算,详见http://dev.w3.org/csswg/css2/ 和 http://www.w3.org/Style/CSS/current-work
 * #TODO 创建layer(层)来表示页面中的某部分可以成组的被绘制,而不用被being re-rasterized.每个帧对象都被分配给一个层(Create layers to describe which parts of the page can be animated as a group
   without being re-rasterized. Each frame/render object is assigned to a layer.)
 * #TODO页面上的每个层都被分配了Textures(Textures are allocated for each layer of the page.)
@@ -232,10 +242,10 @@ Window Server
 
 
 .. _`Creative Commons Zero`: https://creativecommons.org/publicdomain/zero/1.0/
-.. _`"CSS lexical and syntax grammar"`: http://www.w3.org/TR/CSS2/grammar.html
+.. _`CSS词法和句法`: http://www.w3.org/TR/CSS2/grammar.html
 .. _`Punycode`: https://en.wikipedia.org/wiki/Punycode
-.. _`Ethernet`: http://en.wikipedia.org/wiki/IEEE_802.3
+.. _`以太网`: http://en.wikipedia.org/wiki/IEEE_802.3
 .. _`WiFi`: https://en.wikipedia.org/wiki/IEEE_802.11
-.. _`Cellular data network`: https://en.wikipedia.org/wiki/Cellular_data_communication_protocol
+.. _`蜂窝数据网络`: https://en.wikipedia.org/wiki/Cellular_data_communication_protocol
 .. _`analog-to-digital converter`: https://en.wikipedia.org/wiki/Analog-to-digital_converter
-.. _`network node`: https://en.wikipedia.org/wiki/Computer_network#Network_nodes
+.. _`网络节点`: https://en.wikipedia.org/wiki/Computer_network#Network_nodes
