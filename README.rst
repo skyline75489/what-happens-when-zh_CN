@@ -277,29 +277,26 @@ CSS(级联样式表) 解析...
 * 通过自顶向下的给每个节点的子节点分配可行宽度,计算每个节点的实际宽度
 * 通过应用#TODO 文字环绕(text wrapping)、累加子节点的高度和此节点的内边距(padding)、边框(border)和外边距(margin),自底向上的计算每个节点的高度
 * 使用上面的计算结果构建每个节点的坐标
-* 当存在元素使用 ``floated``,
- 位置有 ``absolutely`` 或 ``relatively`` 属性的时候,会有更多复杂的计算,详见http://dev.w3.org/csswg/css2/ 和 http://www.w3.org/Style/CSS/current-work
-* #TODO 创建layer(层)来表示页面中的某部分可以成组的被绘制,而不用被being re-rasterized.每个帧对象都被分配给一个层(Create layers to describe which parts of the page can be animated as a group
-  without being re-rasterized. Each frame/render object is assigned to a layer.)
-* #TODO页面上的每个层都被分配了Textures(Textures are allocated for each layer of the page.)
-* #TODO每个层的帧对象都会被遍历,计算机执行绘图命令绘制各个层,此过程可能由CPU执行或直接通过D2D/SkiaGL在GPU上完成(The frame/render objects for each layers are traversed and drawing commands
-  are executed for their respective layer. This may be rasterized by the CPU
-  or drawn on the GPU directly using D2D/SkiaGL.)
-* 上面所有步骤都可能利用到最近一次页面渲染时计算出来的各个值,这样可以减少不少计算量
-* 计算出各个层的最终位置,一组命令由 Direct3D/OpenGL发出,GPU命令缓冲区清空,命令传至GPU并异步渲染.帧被送到window server
-
-
-
+* 当存在元素使用 ``floated``, 位置有 ``absolutely`` 或 ``relatively`` 属性的时候，会有更多复杂的计算，详见http://dev.w3.org/csswg/css2/ 和 http://www.w3.org/Style/CSS/current-work
+* 创建layer(层)来表示页面中的哪些部分可以成组的被绘制,而不用被重新栅格化处理。每个帧对象都被分配给一个层
+* 页面上的每个层都被分配了纹理(?)
+* 每个层的帧对象都会被遍历,计算机执行绘图命令绘制各个层，此过程可能由CPU执行栅格化处理，或者直接通过D2D/SkiaGL在GPU上绘制
+* 上面所有步骤都可能利用到最近一次页面渲染时计算出来的各个值，这样可以减少不少计算量
+* 计算出各个层的最终位置,一组命令由 Direct3D/OpenGL发出,GPU命令缓冲区清空,命令传至GPU并异步渲染.帧被送到Window Server。
 
 
 GPU 渲染
 --------
 
+* 在渲染过程中，图形处理层可能使用通用用途的CPU，也可能使用图形处理器GPU
+* 当使用GPU用于图形渲染时，图形驱动软件会把任务分成多个部分，这样可以充分利用GPU强大的并行计算能力，用于在渲染过程中进行大量的浮点计算。
+
 Window Server
----------
+-------------
 
 后期渲染与用户引发的处理
-----------
+------------------------
+
 渲染结束后，浏览器根据某些时间机制运行JavaScript代码(比如Google Doodle动画)或与用户交互(在搜索栏输入关键字获得搜索建议)。类似Flash和Java的插件也会运行,尽管Google主页里没有。这些脚本可以触发网络请求，也可能改变网页的内容和布局，产生又一轮渲染与绘制。
 
 
