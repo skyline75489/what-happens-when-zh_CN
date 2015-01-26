@@ -93,6 +93,10 @@ Windows的 ``SendMessage`` API直接将消息添加到特定窗口句柄 ``hWnd`
 检查HSTS列表···
 ---------------
 
+* 浏览器检查自带的“预加载HSTS（HTTP严格传输安全）”列表，这个列表里包含了那些请求浏览器只使用HTTPS进行连接的网站
+* 如果网站在这个列表里，浏览器会使用HTTP而不是HTTPS协议（？），否则，最初的请求会使用HTTP协议发送
+* 注意，一个网站哪怕不在HSTS列表里，也可以要求浏览器对自己使用HSTS政策进行访问。浏览器向网站发出第一个HTTP请求之后，网站会返回浏览器一个响应，请求浏览器只使用HTTPS发送请求。然而，就是这第一个HTTP请求，却可能会使用户收到 `downgrade attack`_ 的威胁，这也是为什么现代浏览器都预置了HSTS列表。
+
 转换非ASCII的Unicode字符
 ------------------------
 
@@ -334,3 +338,4 @@ Window Server
 .. _`analog-to-digital converter`: https://en.wikipedia.org/wiki/Analog-to-digital_converter
 .. _`网络节点`: https://en.wikipedia.org/wiki/Computer_network#Network_nodes
 .. _`不同的操作系统有所不同` : https://en.wikipedia.org/wiki/Hosts_%28file%29#Location_in_the_file_system
+.. _`downgrade attack`: http://en.wikipedia.org/wiki/SSL_stripping
