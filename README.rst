@@ -133,10 +133,10 @@ ARP
 
     Sender MAC: interface:mac:address:here
     Sender IP: interface.ip.goes.here
-    Target MAC: 255.255.255.255 (Broadcast)
+    Target MAC: FF:FF:FF:FF:FF:FF (Broadcast)
     Target IP: target.ip.goes.here
 
-根据连接我们和路由器的硬件类型：
+根据连接主机和路由器的硬件类型不同，可以分为以下几种情况：
 
 直连：
 
