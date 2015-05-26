@@ -317,7 +317,7 @@ HTTPD(HTTP Daemon)在服务器端处理请求/相应。最常见的 HTTPD 有 Li
 * **渲染引擎** 渲染引擎负责展示请求内容。如果请求的内容是 HTML，渲染引擎会解析 HTML 和 CSS，然后将内容展示在屏幕上
 * **网络组件** 网络组件负责网络调用，例如 HTTP 请求等，使用一个平台无关接口，下层是针对不同平台的具体实现
 * **UI后端** UI 后端用于绘制基本 UI 组件，例如下拉列表框和窗口。UI 后端暴露一个统一的平台无关的接口，下层使用操作系统的 UI 方法实现
-* **Javascript 引擎** Javascript 解释器用于解析和执行 Javascript 代码
+* **Javascript 引擎** Javascript 引擎用于解析和执行 Javascript 代码
 * **数据存储** 数据存储组件是一个持久层。浏览器可能需要在本地存储各种各样的数据，例如 Cookie 等。浏览器也需要支持诸如 localStorage，IndexedDB，WebSQL 和 FileSystem 之类的存储机制
 
 HTML 解析
