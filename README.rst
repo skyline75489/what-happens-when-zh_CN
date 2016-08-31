@@ -111,8 +111,8 @@ Windows的 ``SendMessage`` API直接将消息添加到特定窗口句柄 ``hWnd`
 DNS 查询···
 ----------
 
-* 浏览器检查域名是否在缓存当中
-* 如果缓存中没有，就去调用 ``gethostbyname`` 库函数（操作系统不同函数也不同）进行查询
+* 浏览器检查域名是否在缓存当中（要查看 Chrome 当中的缓存， 打开 `chrome://net-internals/#dns <chrome://net-internals/#dns>`_）。
+* 如果缓存中没有，就去调用 ``gethostbyname`` 库函数（操作系统不同函数也不同）进行查询。
 * ``gethostbyname`` 函数在试图进行DNS解析之前首先检查域名是否在本地 Hosts 里，Hosts 的位置 `不同的操作系统有所不同`_
 * 如果 ``gethostbyname`` 没有这个域名的缓存记录，也没有在 ``hosts`` 里找到，它将会向 DNS 服务器发送一条 DNS 查询请求。DNS 服务器是由网络通信栈提供的，通常是本地路由器或者 ISP 的缓存 DNS 服务器。
 
@@ -120,10 +120,10 @@ DNS 查询···
 * 如果 DNS 服务器和我们的主机在同一个子网内，系统会按照下面的 ARP 过程对 DNS 服务器进行 ARP查询
 * 如果 DNS 服务器和我们的主机在不同的子网，系统会按照下面的 ARP 过程对默认网关进行查询
 
-ARP
----
+ARP 过程
+--------
 
-要想发送 ARP 广播，我们需要有一个目标 IP 地址，同时还需要知道用于发送 ARP 广播的接口的 MAC 地址。
+要想发送 ARP（地址解析协议）广播，我们需要有一个目标 IP 地址，同时还需要知道用于发送 ARP 广播的接口的 MAC 地址。
 
 * 首先查询 ARP 缓存，如果缓存命中，我们返回结果：目标 IP = MAC
 
@@ -132,7 +132,7 @@ ARP
 
 * 查看路由表，看看目标 IP 地址是不是在本地路由表中的某个子网内。是的话，使用跟那个子网相连的接口，否则使用与默认网关相连的接口。
 * 查询选择的网络接口的 MAC 地址
-* 我们发送一个二层 ARP 请求：
+* 我们发送一个二层（`OSI 模型`中的数据链路层）ARP 请求：
 
 ``ARP Request``::
 
@@ -176,7 +176,7 @@ ARP
 ----------
 
 当浏览器得到了目标服务器的 IP 地址，以及 URL 中给出来端口号（http 协议默认端口号是 80， https 默认端口号是 443），它会调用系统库函数 ``socket`` ，请求一个
-TCP流套接字，对应的参数是 ``AF_INET`` 和 ``SOCK_STREAM`` 。
+TCP流套接字，对应的参数是 ``AF_INET/AF_INET6`` 和 ``SOCK_STREAM`` 。
 
 * 这个请求首先被交给传输层，在传输层请求被封装成 TCP segment。目标端口会会被加入头部，源端口会在系统内核的动态端口范围内选取（Linux下是ip_local_port_range)
 * TCP segment 被送往网络层，网络层会在其中再加入一个 IP 头部，里面包含了目标服务器的IP地址以及本机的IP地址，把它封装成一个TCP packet。
@@ -274,7 +274,7 @@ HTTPD(HTTP Daemon)在服务器端处理请求/相应。最常见的 HTTPD 有 Li
 
 * HTTPD 接收请求
 * 服务器把请求拆分为以下几个参数：
-    * HTTP 请求方法(GET, POST, HEAD, PUT 和 DELETE)。在访问 Google 这种情况下，使用的是 GET 方法
+    * HTTP 请求方法(``GET``, ``POST``, ``HEAD``, ``PUT``, ``DELETE``, ``CONNECT``, ``OPTIONS``, 或者 ``TRACE``)。直接在地址栏中输入 URL 这种情况下，使用的是 GET 方法
     * 域名：google.com
     * 请求路径/页面：/  (我们没有请求google.com下的指定的页面，因此 / 是默认的路径)
 * 服务器验证其上已经配置了 google.com 的虚拟主机
@@ -405,3 +405,4 @@ Window Server
 .. _`网络节点`: https://en.wikipedia.org/wiki/Computer_network#Network_nodes
 .. _`不同的操作系统有所不同` : https://en.wikipedia.org/wiki/Hosts_%28file%29#Location_in_the_file_system
 .. _`downgrade attack`: http://en.wikipedia.org/wiki/SSL_stripping
+.. _`OSI 模型`: https://en.wikipedia.org/wiki/OSI_model
