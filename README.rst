@@ -288,8 +288,8 @@ HTTPD(HTTP Daemon)在服务器端处理请求/相应。最常见的 HTTPD 有 Li
 
 当服务器提供了资源之后（HTML，CSS，JS，图片等），浏览器会执行下面的操作：
 
-* 解析 HTML，CSS，JS
-* 渲染——构建 DOM 树 -> 渲染 -> 布局 -> 绘制
+* 解析 —— HTML，CSS，JS
+* 渲染 —— 构建 DOM 树 -> 渲染 -> 布局 -> 绘制
 
 
 浏览器
