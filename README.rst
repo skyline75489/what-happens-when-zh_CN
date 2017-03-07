@@ -269,7 +269,7 @@ HTTP/1.1 定义了“关闭连接”的选项 "close"，发送者使用这个选
 
 HTTP 服务器请求处理
 -------------------
-HTTPD(HTTP Daemon)在服务器端处理请求/相应。最常见的 HTTPD 有 Linux 上常用的 Apache 和 nginx，以及 Windows 上的 IIS。
+HTTPD(HTTP Daemon)在服务器端处理请求/响应。最常见的 HTTPD 有 Linux 上常用的 Apache 和 nginx，以及 Windows 上的 IIS。
 
 * HTTPD 接收请求
 * 服务器把请求拆分为以下几个参数：
