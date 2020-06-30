@@ -244,7 +244,7 @@ TLS 握手
 
 **最后放一张自己画的时序图**
 
-![image](https://github.com/LinusPeng97/what-happens-when-zh_CN/blob/tls/image/tls.png?raw=true)
+![image](https://github.com/LinusPeng97/what-happens-when-zh_CN/blob/tls/image/tls.png)
 
 HTTP 协议
 -------
